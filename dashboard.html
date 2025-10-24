@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Creative Performance Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .container-fluid { max-width: 1400px; } 
+        .plotly-graph-div { height: 500px !important; }
+        /* FINAL CSS FIX: Center all numerical columns */
+        table th:nth-child(n+2), table td:nth-child(n+2) {
+            text-align: center !important; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-5">
+        <h1 class="text-center mb-5 display-4 text-primary">Creative Performance Dashboard 🎯</h1>
+        
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2>Top 10 Creatives (Ranked by Composite Score)</h2>
+                <p class="text-muted">The Creative Score is a composite index (0-100) combining efficiency (ROAS) and acquisition (CTR, CVR) metrics. Use **Spend** to assess risk.</p>
+                <table border="1" class="dataframe table table-striped table-hover">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ad_name</th>
+      <th>Creative Score (0-100)</th>
+      <th>Spend</th>
+      <th>ROAS</th>
+      <th>CPA ($)</th>
+      <th>CTR (%)</th>
+      <th>CVR (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V1 - Sienna Partnership  - Evening</td>
+      <td>100.00</td>
+      <td>88.97</td>
+      <td>16.60</td>
+      <td>11.12</td>
+      <td>0.46</td>
+      <td>28.57</td>
+    </tr>
+    <tr>
+      <td>DPA - Single - All In Stock - AUS - 19.08.25</td>
+      <td>97.00</td>
+      <td>7657.47</td>
+      <td>6.44</td>
+      <td>23.35</td>
+      <td>2.00</td>
+      <td>3.89</td>
+    </tr>
+    <tr>
+      <td>DPA - Single - All In Stock - AUS - 19.08.25</td>
+      <td>97.00</td>
+      <td>1744.32</td>
+      <td>5.94</td>
+      <td>24.57</td>
+      <td>2.46</td>
+      <td>3.74</td>
+    </tr>
+    <tr>
+      <td>EPV5 - @jess_kahler - Dresses - AUS - 02.09.25</td>
+      <td>77.84</td>
+      <td>222.35</td>
+      <td>20.44</td>
+      <td>9.67</td>
+      <td>4.31</td>
+      <td>7.64</td>
+    </tr>
+    <tr>
+      <td>V1 - Paris Partnership - Dresses</td>
+      <td>72.69</td>
+      <td>378.46</td>
+      <td>15.52</td>
+      <td>10.51</td>
+      <td>1.11</td>
+      <td>15.72</td>
+    </tr>
+    <tr>
+      <td>V1 - Yana Partnership - Margo</td>
+      <td>71.28</td>
+      <td>99.45</td>
+      <td>14.83</td>
+      <td>9.04</td>
+      <td>0.96</td>
+      <td>15.94</td>
+    </tr>
+    <tr>
+      <td>Shopify Dynamic Facebook Ads Product Set - Sales</td>
+      <td>68.07</td>
+      <td>476.72</td>
+      <td>6.27</td>
+      <td>43.34</td>
+      <td>7.47</td>
+      <td>1.13</td>
+    </tr>
+    <tr>
+      <td>Shopify Dynamic Facebook Ads Product Set - Sales</td>
+      <td>68.07</td>
+      <td>12179.47</td>
+      <td>9.72</td>
+      <td>15.28</td>
+      <td>5.97</td>
+      <td>2.98</td>
+    </tr>
+    <tr>
+      <td>V1 - Celine  Partnership - Polka Dots</td>
+      <td>65.65</td>
+      <td>390.08</td>
+      <td>14.93</td>
+      <td>12.19</td>
+      <td>1.16</td>
+      <td>12.31</td>
+    </tr>
+    <tr>
+      <td>EPV3 - @justanothermannequin - Melanie Halter Neck Maxi Dress - Cream - AUS - 02.09.25</td>
+      <td>62.54</td>
+      <td>77.36</td>
+      <td>15.37</td>
+      <td>12.89</td>
+      <td>3.30</td>
+      <td>7.79</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-danger">Bottom 10 Creatives (Identify What to Pause)</h2>
+                <p class="text-muted">These creatives have the lowest Composite Scores. Analyzing these against the Top 10 provides the greatest insight for the AI phase.</p>
+                <table border="1" class="dataframe table table-striped table-hover table-danger">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ad_name</th>
+      <th>Creative Score (0-100)</th>
+      <th>Spend</th>
+      <th>ROAS</th>
+      <th>CPA ($)</th>
+      <th>CTR (%)</th>
+      <th>CVR (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DPA - Top Search Terms - Wedding Guest Dresses - AUS - 21.7.25</td>
+      <td>0.00</td>
+      <td>13089.28</td>
+      <td>3.75</td>
+      <td>38.96</td>
+      <td>2.81</td>
+      <td>1.97</td>
+    </tr>
+    <tr>
+      <td>DYNCAR - ALL PROD - AUS</td>
+      <td>0.00</td>
+      <td>282.73</td>
+      <td>49.03</td>
+      <td>3.29</td>
+      <td>4.09</td>
+      <td>9.43</td>
+    </tr>
+    <tr>
+      <td>DYNCAR - ALL PROD - AUS</td>
+      <td>0.00</td>
+      <td>282.73</td>
+      <td>49.03</td>
+      <td>3.29</td>
+      <td>4.09</td>
+      <td>9.43</td>
+    </tr>
+    <tr>
+      <td>DYNCAR - ALL PROD - AUS</td>
+      <td>0.00</td>
+      <td>282.73</td>
+      <td>49.03</td>
+      <td>3.29</td>
+      <td>4.09</td>
+      <td>9.43</td>
+    </tr>
+    <tr>
+      <td>DYNCAR - ALL PROD - AUS - Frame Refunds</td>
+      <td>0.00</td>
+      <td>286.83</td>
+      <td>57.73</td>
+      <td>2.87</td>
+      <td>3.13</td>
+      <td>18.18</td>
+    </tr>
+    <tr>
+      <td>DYNCAR1 - Yellow Dresses - UK - 10.09.25</td>
+      <td>0.00</td>
+      <td>311.76</td>
+      <td>5.71</td>
+      <td>62.35</td>
+      <td>2.91</td>
+      <td>1.22</td>
+    </tr>
+    <tr>
+      <td>DYNCOL1 - Bridesmaid Dresses - Dusty Pink - AUS - 17.09.24</td>
+      <td>0.00</td>
+      <td>314.12</td>
+      <td>10.18</td>
+      <td>19.63</td>
+      <td>1.25</td>
+      <td>16.00</td>
+    </tr>
+    <tr>
+      <td>EP1 - @sophiebatzloff  - Baxter Pant - White Lace - USA - 14.10.25 – Copy</td>
+      <td>0.00</td>
+      <td>328.99</td>
+      <td>0.94</td>
+      <td>328.99</td>
+      <td>1.69</td>
+      <td>1.03</td>
+    </tr>
+    <tr>
+      <td>DYNCAR - ALL PROD - AUS</td>
+      <td>0.00</td>
+      <td>282.73</td>
+      <td>49.03</td>
+      <td>3.29</td>
+      <td>4.09</td>
+      <td>9.43</td>
+    </tr>
+    <tr>
+      <td>DYNCOL1 - Bridesmaid Dresses - Rust - AUS - 17.09.24</td>
+      <td>0.00</td>
+      <td>384.05</td>
+      <td>7.87</td>
+      <td>24.00</td>
+      <td>1.02</td>
+      <td>15.53</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.1.1.min.js" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" crossorigin="anonymous"></script>                <div id="efficiency_chart_div" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("efficiency_chart_div")) {                    Plotly.newPlot(                        "efficiency_chart_div",                        [{"hovertemplate":"\u003cb\u003e%{hovertext}\u003c\u002fb\u003e\u003cbr\u003e\u003cbr\u003eCPA ($)=%{x}\u003cbr\u003eROAS=%{y}\u003cbr\u003eSpend=%{marker.size}\u003cbr\u003eCreative Score (0-100)=%{marker.color}\u003cextra\u003e\u003c\u002fextra\u003e","hovertext":["DPA - Top Search Terms - Wedding Guest Dresses - AUS - 21.7.25","Shopify Dynamic Facebook Ads Product Set - Sales","Shopify Dynamic Facebook Ads Product Set - Sales","DPA - Single - All In Stock - AUS - 19.08.25","DPA - Single - All In Stock - AUS - 19.08.25","DYNCAR - All Prods - AUS - 05.08.25","DYNCAR - All Prods - Frame 1 - AUS - 05.08.25 \u2013 Copy","DYNCAR1 - Long Lunch Edit - AUS - 26.03.25","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","C1 - DPA - Olive Evening Dresses - AUS - 21.7.25","DPA - $10 off - AUS","DYNCOL3 - Green - Bridesmaids - AUS - 05.03.24 \u2013 Copy","DYNCAR - Gigi Maxi - AUS - 19.08.25","V2 - Polka Dot Trend - Arrivals - AUS - 08.10.25","DYNCAR - All Prods - Frame 2 - AUS - 05.08.25 \u2013 Copy","C1- Rochelle Partnership - Event Ready","DPA - Single - All In Stock - AUS - 19.08.25","DPA - Single - All In Stock - AUS - 19.08.25","EPV2 - @jordannamorandin - Back In Stock - AUS - 09.10.25 \u2013 Copy","DPA - Prospecting - All prod - NZ","DPA - Prospecting - All prod - NZ","DYNCAR1 - Sku Data - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DPA - Single - All In Stock - AUS - 14.10.25","EP3 - @sophiebatzloff - Baxter Pant - White Lace - AUS - 14.10.25 \u2013 Copy","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","EPV2 - @dekota_thompson - Tiarna Off The Shoulder Maxi Dress - Yellow - AUS - 16.09.25 \u2013 Copy","V3- Polka Dot Trend - Arrivals - AUS - 08.10.25","DYNCAR - ALL PROD - AUS - Frame Shipping","DPA URL - 19.02.24","DPA URL - 19.02.24","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - All Prods - AUS - 14.10.25","V1 - Bella Partnership - Margo","DCAR1 - All products - AUS","V1 - Chloe Partnership - Maternity","Shopify Dynamic Facebook Ads Product Set - Sales","Shopify Dynamic Facebook Ads Product Set - Sales","V1 - Celine  Partnership - Polka Dots","DYNCOL1 - Bridesmaid Dresses - Rust - AUS - 17.09.24","V1 - Paris Partnership - Dresses","EP1 - @sophiebatzloff  - Baxter Pant - White Lace - USA - 14.10.25 \u2013 Copy","DYNCOL1 - Bridesmaid Dresses - Dusty Pink - AUS - 17.09.24","V1 - Partnership - @chlobellexx - Maternity Dress - AUS","DYNCAR1 - Yellow Dresses - UK - 10.09.25","DYNCAR - ALL PROD - AUS - Frame Refunds","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - Back In Stock October  - AUS","V1 - Celine Partnership - Polka Dots","EPV5 - @jess_kahler - Dresses - AUS - 02.09.25","DYNS1 - Freya Maxi Dress - Black - AUS - 21.08.25","1.Aq - DPA - ADV+ - CAR CAT ALL PROD - Canada","DPA - Prospecting - All prod - NZ","DPA - Prospecting - All prod - NZ","EPV3 - @rosalieburns - Halen Off Shoulder Mini Dress - Black - AUS - 09.10.25 \u2013 Copy","EPV1 - @dekota_thompson - Chiara Maxi Dress - Yellow - AUS - 23.09.25 \u2013 Copy","EP5 - @lillychugg - Robin Off Shoulder Top - Taupe - AUS - 14.10.25 \u2013 Copy","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DPA - Prospecting - All prod - AUS","1.Aq - DPA - ADV+ - STATIC CAT ALL PROD - Canada","V3- Polka Dot Trend - Arrivals - AUS - 08.10.25 - Copy","DYNCAR - ALL PROD - AUS - Frame Returns","DPA - Prospecting - CAR - All prod - CAN","Video - Amy - Jessica Skort","V7 - Partnership - @Bellarychter - AUS - 01.10.25","EPV1 - @eileencassidy_ - Cierra Midi Dress - White - Exisiting Posts - AUS - 01.04.25","V1 - Yana Partnership - Margo","EPV5 - @josephinemok - Tiffy Crochet Short Sleeve Maxi Dress - White - AUS - 23.09.25 \u2013 Copy","DPA URL - 19.02.24","DPA URL - 19.02.24","V1 - Sienna Partnership  - Evening","EP3 - Blue Orchid - AUS - 09.10.25 \u2013 Copy","EPV3 - @justanothermannequin - Melanie Halter Neck Maxi Dress - Cream - AUS - 02.09.25","EPV6 - @amytowne - Back In Stock - AUS - 02.09.25","C1- Rochelle Partnership - Event Ready - Copy","EPV1 - @bynicolevoz - Bridesmaid Dresses and Gowns - AUS -  14.10.25 \u2013 Copy","EPV13 - @kirsty_ackermann - Evening Dresses - AUS - 27.08.25","DPA - Prospecting - Static - All prod - CAN","EP4 - @deepikangalie - Alani Maxi Dress - Chocolate - AUS - 14.10.25 \u2013 Copy","C1 - DPA - Yellow Evening Dresses - AUS - 18.7.25 \u2013 Copy"],"legendgroup":"","marker":{"color":{"dtype":"f8","bdata":"AAAAAAAAAAC0z4bHlQRRQGhP6A8P80JAN8u3U\u002f0\u002fWEAmdJYt\u002f0ZFQNvEE4MVgDtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb+oDFfq3REAAAAAAAAAAAE2IOUKkFDtAN8u3U\u002f0\u002fWEAmdJYt\u002f0ZFQIBh\u002fnPVAUFAAAAAAAAAAAAAAAAAAAAAADXa6QRsxkFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmO\u002fyfH78RkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGi5SLfxj9A2zogs9zePkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmA1GblJDQD35i+T6\u002fkpAlhuRDGfLS0BgFHntTRJLQLTPhseVBFFAaE\u002foDw\u002fzQkDj97EV3mlQQAAAAAAAAAAAZUDTrwQsUkAAAAAAAAAAAAAAAAAAAAAAOduhi9P1PkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSlcDfEF4+QGJEdH0TdlNA7y3D\u002fmrCQUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQm6r8tIwQOZG6Y3Dx0BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxYSMsg\u002fBKkAAAAAAAAAAAAAAAAAAAAAAXM0tvS1wM0B2z1vH2k06QOKBvMayJ0NAKW7FDQbSUUBmx3PIgUFBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQAAAAAAAAAAAi6RE+ZNFT0Byu8vnUJNEQNCcsmBThSVAWfMaa6ADQEA4jgdoPZZCQJKNhEpacERAAAAAAAAAAAAAAAAAAAAAAA=="},"coloraxis":"coloraxis","size":{"dtype":"f8","bdata":"cT0K16OQyUCPwvUovMnHQI\u002fC9Si8ycdAH4XrUXjpvUAfhetReOm9QEjhehQuVLtAhetRuN6ztEBxPQrXI0WsQK5H4XqU+6hArkfhepT7qECuR+F6lPuoQK5H4XqU+6hArkfhepT7qECuR+F6lPuoQGZmZmZmMKdArkfhepT9pUBI4XoULmajQFK4HoXrC6NAcT0K16MFoEAAAAAAABueQPYoXI\u002fC3J1A4XoUrkdBm0DhehSuR0GbQI\u002fC9Shc45dA7FG4HoUfl0DsUbgehR+XQFyPwvUoCZZAFK5H4Xq5lEAUrkfhermUQBSuR+F6uZRAFK5H4Xq5lEAUrkfhermUQBSuR+F6uZRA9ihcj8LZk0CkcD0K15mSQHE9Ctejb5JAcT0K16NvkkBxPQrXo2+SQHE9Ctejb5JAcT0K16NvkkBxPQrXo2+SQDMzMzMz25FACtejcD0JkEDD9ShcjwCQQOxRuB6FCYtA7FG4HoUJi0DhehSuR9eKQOF6FK5H14pA4XoUrkfXikDhehSuR9eKQOF6FK5H14pA4XoUrkfXikApXI\u002fC9bSJQK5H4XoUVodA16NwPQo5hUAK16NwPeqBQOxRuB6Fy31A7FG4HoXLfUDhehSuR2F4QM3MzMzMAHhAj8L1KFynd0CkcD0K1490QFK4HoXroXNAw\u002fUoXI9+c0Bcj8L1KHxzQOF6FK5H7XFASOF6FK6rcUBI4XoUrqtxQEjhehSuq3FASOF6FK6rcUBI4XoUrqtxQEjhehSuq3FA4XoUrkdJcUBSuB6F6ylwQDMzMzMzy2tAmpmZmZmpakCkcD0K12toQMP1KFyPSmhAw\u002fUoXI9KaECamZmZmZlnQM3MzMzMHGdArkfhehTuZUCF61G4Hp1lQIXrUbgenWVAhetRuB6dZUCF61G4Hp1lQIXrUbgenWVAhetRuB6dZUApXI\u002fC9YBlQAAAAAAA4GNAFK5H4XpEY0BxPQrXozhjQB+F61G4XmJA16NwPQr3XUDNzMzMzNxdQK5H4XoUzltAzczMzMzcWEDNzMzMzLxXQDMzMzMzQ1ZAMzMzMzNDVkCuR+F6FD5WQMP1KFyPAlVA16NwPQpXU0D2KFyPwlVTQFyPwvUoLFNAexSuR+GqUEApXI\u002fC9XhQQLgehetRuE9AZmZmZmYGTkAzMzMzM7NMQA=="},"sizemode":"area","sizeref":32.7232,"symbol":"circle"},"mode":"markers","name":"","orientation":"v","showlegend":false,"x":{"dtype":"f8","bdata":"exSuR+F6Q0CPwvUoXI8uQI\u002fC9Shcjy5AmpmZmZlZN0CamZmZmVk3QArXo3A9Sj5AZmZmZmbmOkBcj8L1KHxJQEjhehSuRw9ASOF6FK5HD0BI4XoUrkcPQEjhehSuRw9ASOF6FK5HD0BI4XoUrkcPQJqZmZmZGT1AKVyPwvUoMkD2KFyPwtVPQFyPwvUo\u002fENAMzMzMzMTT0DsUbgehes7QDMzMzMzsztAUrgeheuROEBSuB6F65E4QIXrUbgepUJAmpmZmZmZLUCamZmZmZktQKRwPQrXYzZAH4XrUbheMEAfhetRuF4wQB+F61G4XjBAH4XrUbheMEAfhetRuF4wQB+F61G4XjBA7FG4HoUrNEAzMzMzMzNDQD0K16NwPQhAPQrXo3A9CEA9CtejcD0IQD0K16NwPQhAPQrXo3A9CEA9CtejcD0IQFK4HoXrkTxAUrgeheuxQUDsUbgehesHQFyPwvUoXA1AXI\u002fC9ShcDUCuR+F6FK4uQK5H4XoUri5ArkfhehSuLkCuR+F6FK4uQK5H4XoUri5ArkfhehSuLkB7FK5H4To2QOF6FK5H4S1Aw\u002fUoXI9CKEDXo3A9CtcvQOxRuB6Fq0VA7FG4HoWrRUDhehSuR2EoQAAAAAAAADhAhetRuB4FJUCkcD0K1490QOF6FK5HoTNAFK5H4XpUQUDNzMzMzCxPQPYoXI\u002fC9QZAUrgehetRCkBSuB6F61EKQFK4HoXrUQpAUrgehetRCkBSuB6F61EKQFK4HoXrUQpAKVyPwvVIQUDD9Shcj4I3QNejcD0KVyNAKVyPwvWoOkApXI\u002fC9YhDQGZmZmZm5i1AZmZmZmbmLUDXo3A9CndPQArXo3A9ijRAPQrXo3A9PUDhehSuR+EQQOF6FK5H4RBA4XoUrkfhEEDhehSuR+EQQOF6FK5H4RBA4XoUrkfhEEDhehSuR4FVQPYoXI\u002fCtTZAFK5H4XpEU0DsUbgehesLQB+F61G4XkJA16NwPQr3TUApXI\u002fC9egzQArXo3A9ijJAFK5H4XoUIkA9CtejcL03QFyPwvUoXAtAXI\u002fC9ShcC0A9CtejcD0mQMP1KFyPAlVASOF6FK7HKUBI4XoUrsc5QFyPwvUoLFNA7FG4HoWrQEC4HoXrUXgwQLgehetRuC9AZmZmZmYGTkAzMzMzM7M8QA=="},"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAADkBxPQrXo3AjQHE9CtejcCNAw\u002fUoXI\u002fCGUDD9Shcj8IZQMP1KFyPwhNAmpmZmZmZFUD2KFyPwvUEQHsUrkfhOkNAexSuR+E6Q0B7FK5H4TpDQHsUrkfhOkNAexSuR+E6Q0B7FK5H4TpDQJqZmZmZmRhArkfhehSuH0DXo3A9CtcJQArXo3A9Cg9AuB6F61G4BkCuR+F6FK4UQHsUrkfhehVAw\u002fUoXI\u002fCF0DD9Shcj8IXQBSuR+F6FBNAmpmZmZmZJUCamZmZmZklQOF6FK5H4RlAKVyPwvWoJEApXI\u002fC9agkQClcj8L1qCRAKVyPwvWoJEApXI\u002fC9agkQClcj8L1qCRAuB6F61G4H0DhehSuR+EMQKRwPQrXw0lApHA9CtfDSUCkcD0K18NJQKRwPQrXw0lApHA9CtfDSUCkcD0K18NJQK5H4XoUrhNACtejcD0KEECamZmZmflMQArXo3A9KkZACtejcD0qRkCuR+F6FK4jQK5H4XoUriNArkfhehSuI0CuR+F6FK4jQK5H4XoUriNArkfhehSuI0CF61G4HgUhQClcj8L1qCNAKVyPwvWoJkAUrkfhehQmQBSuR+F6FBlAFK5H4XoUGUBcj8L1KNwtQHsUrkfheh9ACtejcD0KL0AUrkfhehTuP1yPwvUoXCRAj8L1KFyPF0DXo3A9CtcWQD0K16Nw3UxApHA9CteDSECkcD0K14NIQKRwPQrXg0hApHA9CteDSECkcD0K14NIQKRwPQrXg0hAuB6F61G4GEBcj8L1KFwaQHE9CtejcDRAmpmZmZmZEUDNzMzMzMwVQMP1KFyPQiJAw\u002fUoXI9CIkBSuB6F61ECQClcj8L1KBZACtejcD0KFUBxPQrXozBCQHE9CtejMEJAcT0K16MwQkBxPQrXozBCQHE9CtejMEJAcT0K16MwQkBxPQrXo3AaQPYoXI\u002fC9SFAH4XrUbge9T\u002fhehSuRwFMQAAAAAAAABNAUrgehetRCEBSuB6F61EQQHsUrkfheh1AKVyPwvWoLUAfhetRuB4WQBSuR+F61EJAFK5H4XrUQkCamZmZmZkwQOxRuB6F6\u002fk\u002fPQrXo3C9LkCF61G4HoUcQBSuR+F6FABA7FG4HoXrH0AzMzMzMzMbQBSuR+F6lCNAmpmZmZmZC0C4HoXrUbgEQA=="},"yaxis":"y","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Cost Per Acquisition (AUD)"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Return On Ad Spend (ROAS)"}},"coloraxis":{"colorbar":{"title":{"text":"Creative Score (0-100)"}},"colorscale":[[0.0,"#000004"],[0.1111111111111111,"#1b0c41"],[0.2222222222222222,"#4a0c6b"],[0.3333333333333333,"#781c6d"],[0.4444444444444444,"#a52c60"],[0.5555555555555556,"#cf4446"],[0.6666666666666666,"#ed6925"],[0.7777777777777778,"#fb9b06"],[0.8888888888888888,"#f7d13d"],[1.0,"#fcffa4"]]},"legend":{"tracegroupgap":0,"itemsizing":"constant"},"title":{"text":"1. Creative Efficiency: ROAS vs. CPA (Bubble size = Spend)"}},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+            <div class="col-lg-6">
+                <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.1.1.min.js" integrity="sha256-HUEFyfiTnZJxCxur99FjbKYTvKSzwDaD3/x5TqHpFu4=" crossorigin="anonymous"></script>                <div id="acquisition_chart_div" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("acquisition_chart_div")) {                    Plotly.newPlot(                        "acquisition_chart_div",                        [{"hovertemplate":"\u003cb\u003e%{hovertext}\u003c\u002fb\u003e\u003cbr\u003e\u003cbr\u003eCTR (%)=%{x}\u003cbr\u003eCVR (%)=%{y}\u003cbr\u003eSpend=%{marker.size}\u003cbr\u003eCreative Score (0-100)=%{marker.color}\u003cextra\u003e\u003c\u002fextra\u003e","hovertext":["DPA - Top Search Terms - Wedding Guest Dresses - AUS - 21.7.25","Shopify Dynamic Facebook Ads Product Set - Sales","Shopify Dynamic Facebook Ads Product Set - Sales","DPA - Single - All In Stock - AUS - 19.08.25","DPA - Single - All In Stock - AUS - 19.08.25","DYNCAR - All Prods - AUS - 05.08.25","DYNCAR - All Prods - Frame 1 - AUS - 05.08.25 \u2013 Copy","DYNCAR1 - Long Lunch Edit - AUS - 26.03.25","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","C1 - DPA - Olive Evening Dresses - AUS - 21.7.25","DPA - $10 off - AUS","DYNCOL3 - Green - Bridesmaids - AUS - 05.03.24 \u2013 Copy","DYNCAR - Gigi Maxi - AUS - 19.08.25","V2 - Polka Dot Trend - Arrivals - AUS - 08.10.25","DYNCAR - All Prods - Frame 2 - AUS - 05.08.25 \u2013 Copy","C1- Rochelle Partnership - Event Ready","DPA - Single - All In Stock - AUS - 19.08.25","DPA - Single - All In Stock - AUS - 19.08.25","EPV2 - @jordannamorandin - Back In Stock - AUS - 09.10.25 \u2013 Copy","DPA - Prospecting - All prod - NZ","DPA - Prospecting - All prod - NZ","DYNCAR1 - Sku Data - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DPA - Single - All In Stock - AUS - 14.10.25","EP3 - @sophiebatzloff - Baxter Pant - White Lace - AUS - 14.10.25 \u2013 Copy","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","EPV2 - @dekota_thompson - Tiarna Off The Shoulder Maxi Dress - Yellow - AUS - 16.09.25 \u2013 Copy","V3- Polka Dot Trend - Arrivals - AUS - 08.10.25","DYNCAR - ALL PROD - AUS - Frame Shipping","DPA URL - 19.02.24","DPA URL - 19.02.24","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - All Prods - AUS - 14.10.25","V1 - Bella Partnership - Margo","DCAR1 - All products - AUS","V1 - Chloe Partnership - Maternity","Shopify Dynamic Facebook Ads Product Set - Sales","Shopify Dynamic Facebook Ads Product Set - Sales","V1 - Celine  Partnership - Polka Dots","DYNCOL1 - Bridesmaid Dresses - Rust - AUS - 17.09.24","V1 - Paris Partnership - Dresses","EP1 - @sophiebatzloff  - Baxter Pant - White Lace - USA - 14.10.25 \u2013 Copy","DYNCOL1 - Bridesmaid Dresses - Dusty Pink - AUS - 17.09.24","V1 - Partnership - @chlobellexx - Maternity Dress - AUS","DYNCAR1 - Yellow Dresses - UK - 10.09.25","DYNCAR - ALL PROD - AUS - Frame Refunds","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - Back In Stock October  - AUS","V1 - Celine Partnership - Polka Dots","EPV5 - @jess_kahler - Dresses - AUS - 02.09.25","DYNS1 - Freya Maxi Dress - Black - AUS - 21.08.25","1.Aq - DPA - ADV+ - CAR CAT ALL PROD - Canada","DPA - Prospecting - All prod - NZ","DPA - Prospecting - All prod - NZ","EPV3 - @rosalieburns - Halen Off Shoulder Mini Dress - Black - AUS - 09.10.25 \u2013 Copy","EPV1 - @dekota_thompson - Chiara Maxi Dress - Yellow - AUS - 23.09.25 \u2013 Copy","EP5 - @lillychugg - Robin Off Shoulder Top - Taupe - AUS - 14.10.25 \u2013 Copy","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DYNCAR - ALL PROD - AUS","DPA - Prospecting - All prod - AUS","1.Aq - DPA - ADV+ - STATIC CAT ALL PROD - Canada","V3- Polka Dot Trend - Arrivals - AUS - 08.10.25 - Copy","DYNCAR - ALL PROD - AUS - Frame Returns","DPA - Prospecting - CAR - All prod - CAN","Video - Amy - Jessica Skort","V7 - Partnership - @Bellarychter - AUS - 01.10.25","EPV1 - @eileencassidy_ - Cierra Midi Dress - White - Exisiting Posts - AUS - 01.04.25","V1 - Yana Partnership - Margo","EPV5 - @josephinemok - Tiffy Crochet Short Sleeve Maxi Dress - White - AUS - 23.09.25 \u2013 Copy","DPA URL - 19.02.24","DPA URL - 19.02.24","V1 - Sienna Partnership  - Evening","EP3 - Blue Orchid - AUS - 09.10.25 \u2013 Copy","EPV3 - @justanothermannequin - Melanie Halter Neck Maxi Dress - Cream - AUS - 02.09.25","EPV6 - @amytowne - Back In Stock - AUS - 02.09.25","C1- Rochelle Partnership - Event Ready - Copy","EPV1 - @bynicolevoz - Bridesmaid Dresses and Gowns - AUS -  14.10.25 \u2013 Copy","EPV13 - @kirsty_ackermann - Evening Dresses - AUS - 27.08.25","DPA - Prospecting - Static - All prod - CAN","EP4 - @deepikangalie - Alani Maxi Dress - Chocolate - AUS - 14.10.25 \u2013 Copy","C1 - DPA - Yellow Evening Dresses - AUS - 18.7.25 \u2013 Copy"],"legendgroup":"","marker":{"color":{"dtype":"f8","bdata":"AAAAAAAAAAC0z4bHlQRRQGhP6A8P80JAN8u3U\u002f0\u002fWEAmdJYt\u002f0ZFQNvEE4MVgDtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb+oDFfq3REAAAAAAAAAAAE2IOUKkFDtAN8u3U\u002f0\u002fWEAmdJYt\u002f0ZFQIBh\u002fnPVAUFAAAAAAAAAAAAAAAAAAAAAADXa6QRsxkFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmO\u002fyfH78RkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGi5SLfxj9A2zogs9zePkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmA1GblJDQD35i+T6\u002fkpAlhuRDGfLS0BgFHntTRJLQLTPhseVBFFAaE\u002foDw\u002fzQkDj97EV3mlQQAAAAAAAAAAAZUDTrwQsUkAAAAAAAAAAAAAAAAAAAAAAOduhi9P1PkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSlcDfEF4+QGJEdH0TdlNA7y3D\u002fmrCQUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQm6r8tIwQOZG6Y3Dx0BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxYSMsg\u002fBKkAAAAAAAAAAAAAAAAAAAAAAXM0tvS1wM0B2z1vH2k06QOKBvMayJ0NAKW7FDQbSUUBmx3PIgUFBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQAAAAAAAAAAAi6RE+ZNFT0Byu8vnUJNEQNCcsmBThSVAWfMaa6ADQEA4jgdoPZZCQJKNhEpacERAAAAAAAAAAAAAAAAAAAAAAA=="},"coloraxis":"coloraxis","size":{"dtype":"f8","bdata":"cT0K16OQyUCPwvUovMnHQI\u002fC9Si8ycdAH4XrUXjpvUAfhetReOm9QEjhehQuVLtAhetRuN6ztEBxPQrXI0WsQK5H4XqU+6hArkfhepT7qECuR+F6lPuoQK5H4XqU+6hArkfhepT7qECuR+F6lPuoQGZmZmZmMKdArkfhepT9pUBI4XoULmajQFK4HoXrC6NAcT0K16MFoEAAAAAAABueQPYoXI\u002fC3J1A4XoUrkdBm0DhehSuR0GbQI\u002fC9Shc45dA7FG4HoUfl0DsUbgehR+XQFyPwvUoCZZAFK5H4Xq5lEAUrkfhermUQBSuR+F6uZRAFK5H4Xq5lEAUrkfhermUQBSuR+F6uZRA9ihcj8LZk0CkcD0K15mSQHE9Ctejb5JAcT0K16NvkkBxPQrXo2+SQHE9Ctejb5JAcT0K16NvkkBxPQrXo2+SQDMzMzMz25FACtejcD0JkEDD9ShcjwCQQOxRuB6FCYtA7FG4HoUJi0DhehSuR9eKQOF6FK5H14pA4XoUrkfXikDhehSuR9eKQOF6FK5H14pA4XoUrkfXikApXI\u002fC9bSJQK5H4XoUVodA16NwPQo5hUAK16NwPeqBQOxRuB6Fy31A7FG4HoXLfUDhehSuR2F4QM3MzMzMAHhAj8L1KFynd0CkcD0K1490QFK4HoXroXNAw\u002fUoXI9+c0Bcj8L1KHxzQOF6FK5H7XFASOF6FK6rcUBI4XoUrqtxQEjhehSuq3FASOF6FK6rcUBI4XoUrqtxQEjhehSuq3FA4XoUrkdJcUBSuB6F6ylwQDMzMzMzy2tAmpmZmZmpakCkcD0K12toQMP1KFyPSmhAw\u002fUoXI9KaECamZmZmZlnQM3MzMzMHGdArkfhehTuZUCF61G4Hp1lQIXrUbgenWVAhetRuB6dZUCF61G4Hp1lQIXrUbgenWVAhetRuB6dZUApXI\u002fC9YBlQAAAAAAA4GNAFK5H4XpEY0BxPQrXozhjQB+F61G4XmJA16NwPQr3XUDNzMzMzNxdQK5H4XoUzltAzczMzMzcWEDNzMzMzLxXQDMzMzMzQ1ZAMzMzMzNDVkCuR+F6FD5WQMP1KFyPAlVA16NwPQpXU0D2KFyPwlVTQFyPwvUoLFNAexSuR+GqUEApXI\u002fC9XhQQLgehetRuE9AZmZmZmYGTkAzMzMzM7NMQA=="},"sizemode":"area","sizeref":32.7232,"symbol":"circle"},"mode":"markers","name":"","orientation":"v","showlegend":false,"x":{"dtype":"f8","bdata":"exSuR+F6BkDhehSuR+EXQOF6FK5H4RdAAAAAAAAAAEAAAAAAAAAAQGZmZmZmZhJAMzMzMzMzEECuR+F6FK4NQAAAAAAAAB1AAAAAAAAAHUAAAAAAAAAdQAAAAAAAAB1AAAAAAAAAHUAAAAAAAAAdQM3MzMzMzPQ\u002fCtejcD0KFkBmZmZmZmbuP83MzMzMzPA\u002fPQrXo3A9AkAUrkfhehQOQJqZmZmZmfE\u002frkfhehSuA0CuR+F6FK4DQAAAAAAAAApAUrgehetRE0BSuB6F61ETQEjhehSuRw1AMzMzMzMzGEAzMzMzMzMYQDMzMzMzMxhAMzMzMzMzGEAzMzMzMzMYQDMzMzMzMxhAzczMzMzMAkC4HoXrUbjuP1K4HoXrUR1AUrgehetRHUBSuB6F61EdQFK4HoXrUR1AUrgehetRHUBSuB6F61EdQOF6FK5H4fY\u002fMzMzMzMz+z+amZmZmZkJQArXo3A9ChtACtejcD0KG0CPwvUoXI8UQI\u002fC9ShcjxRAj8L1KFyPFECPwvUoXI8UQI\u002fC9ShcjxRAj8L1KFyPFECPwvUoXI8TQOF6FK5H4fY\u002frkfhehSuHEAfhetRuB75P+F6FK5H4R1A4XoUrkfhHUCPwvUoXI\u002fyP1K4HoXrUfA\u002fw\u002fUoXI\u002fC8T8K16NwPQr7PwAAAAAAAPQ\u002fZmZmZmZm9j9I4XoUrkcHQArXo3A9CglAXI\u002fC9ShcEEBcj8L1KFwQQFyPwvUoXBBAXI\u002fC9ShcEEBcj8L1KFwQQFyPwvUoXBBAj8L1KFyPCkCPwvUoXI\u002fyPz0K16NwPRFACtejcD0Kxz8AAAAAAAATQJqZmZmZmRJAmpmZmZmZEkCuR+F6FK77P7gehetRuPo\u002fexSuR+F61D8zMzMzMzMQQDMzMzMzMxBAMzMzMzMzEEAzMzMzMzMQQDMzMzMzMxBAMzMzMzMzEEAK16NwPQoBQNejcD0K1wNAFK5H4XoUAECamZmZmZkQQFyPwvUoXBVAH4XrUbgeAUCPwvUoXI\u002fyPwAAAAAAAA5AuB6F61G47j\u002fXo3A9CtfzP6RwPQrXox5ApHA9CtejHkBxPQrXo3DdPzMzMzMzM+s\u002fZmZmZmZmCkDsUbgehesJQKRwPQrXo\u002fg\u002fFK5H4XoU9j8fhetRuB4BQDMzMzMzMwtAw\u002fUoXI\u002fC9T8zMzMzMzP\u002fPw=="},"xaxis":"x","y":{"dtype":"f8","bdata":"hetRuB6F\u002fz\u002fXo3A9CtcHQNejcD0K1wdAH4XrUbgeD0AfhetRuB4PQHE9CtejcPk\u002frkfhehSuAUCuR+F6FK73PxSuR+F6FB5AFK5H4XoUHkAUrkfhehQeQBSuR+F6FB5AFK5H4XoUHkAUrkfhehQeQIXrUbgehRdAzczMzMzMAECF61G4HoULQKRwPQrXo\u002fg\u002fCtejcD0KAUCkcD0K16MAQDMzMzMzMwtA7FG4HoXrDUDsUbgehesNQFyPwvUoXPs\u002f9ihcj8L1AED2KFyPwvUAQNejcD0K1wlAhetRuB6FC0CF61G4HoULQIXrUbgehQtAhetRuB6FC0CF61G4HoULQIXrUbgehQtAmpmZmZmZCUDXo3A9CtcTQOxRuB6F6xlA7FG4HoXrGUDsUbgehesZQOxRuB6F6xlA7FG4HoXrGUDsUbgehesZQGZmZmZmZhRA9ihcj8L1DkBmZmZmZmYzQClcj8L1KBtAKVyPwvUoG0AUrkfhehQIQBSuR+F6FAhAFK5H4XoUCEAUrkfhehQIQBSuR+F6FAhAFK5H4XoUCECamZmZmZn1P1yPwvUo3CJAuB6F61G4DkDNzMzMzMwdQBSuR+F6FPI\u002fFK5H4XoU8j8fhetRuJ4oQI\u002fC9ShcDy9AcT0K16NwL0B7FK5H4XrwPwAAAAAAADBAj8L1KFyPCECF61G4HoXzP65H4XoULjJAXI\u002fC9SjcIkBcj8L1KNwiQFyPwvUo3CJAXI\u002fC9SjcIkBcj8L1KNwiQFyPwvUo3CJAmpmZmZmZ\u002fT8fhetRuB4TQI\u002fC9Shcjx5A4XoUrkfhJ0CkcD0K16PwP3E9CtejcANAcT0K16NwA0C4HoXrUbgEQArXo3A9Ch1AAAAAAAAAFEBxPQrXo3AhQHE9CtejcCFAcT0K16NwIUBxPQrXo3AhQHE9CtejcCFAcT0K16NwIUApXI\u002fC9SgCQHE9CtejcAdApHA9Ctej\u002fD\u002fD9Shcj0IyQEjhehSuR\u002fE\u002fCtejcD0K7z\u002fD9Shcj8IXQNejcD0K1xNA4XoUrkfhL0AfhetRuB4bQClcj8L1KBtAKVyPwvUoG0BSuB6F65E8QM3MzMzMzPQ\u002fKVyPwvUoH0DsUbgehesbQI\u002fC9Shcj+o\u002fmpmZmZmZDUCkcD0K16MdQFyPwvUoXA9ACtejcD0KAUAAAAAAAAACQA=="},"yaxis":"y","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Click-Through Rate (%)"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Conversion Rate (%)"}},"coloraxis":{"colorbar":{"title":{"text":"Creative Score (0-100)"}},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"legend":{"tracegroupgap":0,"itemsizing":"constant"},"title":{"text":"2. Creative Acquisition: CTR vs. CVR (Bubble size = Spend)"}},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 text-center text-muted border-top pt-3">
+            Analysis generated by creative_pipeline.py | Data is interactive: hover and zoom!
+        </footer>
+    </div>
+</body>
+</html>
