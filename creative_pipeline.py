@@ -1,257 +1,197 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 
-# --- 1. CONFIGURATION (FINAL, WORKING MAPPING) ---
-# The left side MUST match the headers in your 'raw_creative_data.csv' exactly.
-# The right side is the standardized name used in the script.
+# ----------------------------------------------------------------------
+# 1. CONFIGURATION: COLUMN MAPPING & WEIGHTS
+# ----------------------------------------------------------------------
+
+# Map the columns from your raw Meta export to clean, simple names for Python
 COLUMN_MAPPING = {
     # CRITICAL IDENTIFIERS & METRICS
-    'Ad name': 'ad_name',           
-    'Ads': 'ad_id',                 
-    'Creative ID': 'creative_id',   
-    'CTR (all)': 'CTR_Raw',         
+    'Ad name': 'ad_name',
+    'Ads': 'ad_id',
+    'Creative ID': 'creative_id',
+    'CTR (all)': 'CTR_Raw',
+    # NEW: Creative link needed for AI analysis
+    'Preview link': 'creative_link',  # <--- NEWLY ADDED COLUMN
 
     # Metrics from your Facebook Export
-    'Amount spent (AUD)': 'Spend',         
-    'Impressions': 'impressions',          
+    'Amount spent (AUD)': 'Spend',
+    'Impressions': 'impressions',
     'Reach': 'reach',
     'Frequency': 'frequency',
-    'Clicks (all)': 'clicks',
-    'Outbound clicks': 'Outbound_Clicks',  
-    'Purchases': 'Conversions',             
-    'Cost per result': 'CPA',              
-    'Purchase ROAS (return on ad spend)': 'ROAS_Purchase',  
-    'Video plays at 95%': 'ThruPlay_Raw' 
+    'Clicks (all)': 'Clicks_All',
+    'Outbound clicks': 'Outbound_Clicks',
+    'Purchases': 'Purchases',
+    'Purchase ROAS (return on ad spend)': 'ROAS_Purchase',
+    'Video plays at 95%': 'Video_95_Percent',
 }
 
-# --- FILTERS (EDIT THESE VALUES!) ---
-MIN_SPEND = 50.0        # Exclude ads with < $50 spend
-MIN_IMPRESSIONS = 1000  # Exclude ads with < 1,000 impressions
-MIN_SPEND_FOR_RANKING = 50.0 
-MAX_FREQUENCY = 5.0     
+# Weights for the Composite Creative Score (must total 1.0)
+# This defines what 'good' creative performance means for your business.
+SCORE_WEIGHTS = {
+    'CTR_Decimal': 0.40,      # Ad stops the scroll and gets the click
+    'CVR_Decimal': 0.30,      # Ad quality leads to a purchase
+    'ROAS_Purchase': 0.20,    # Efficiency/Profitability
+    'ThruPlay_Decimal': 0.10, # Video attention (if applicable)
+}
 
+# ----------------------------------------------------------------------
+# 2. DATA CLEANING FUNCTIONS
+# ----------------------------------------------------------------------
 
-# --- 2. DATA LOADING & INITIAL CLEANING ---
-def load_data(file_path='raw_creative_data.csv'):
-    """Tries multiple encodings to reliably load CSV, renames, and cleans data."""
+def load_and_clean_data(file_path, mapping):
+    """Loads CSV, renames columns, converts metrics to numeric, and filters."""
+    df = pd.read_csv(file_path)
+
+    # Clean header: remove leading/trailing whitespace from column names
+    df.columns = df.columns.str.strip()
+    df = df.rename(columns=mapping)
+
+    # Identify metric columns to convert to numeric, handling errors
+    metric_cols = [
+        'Spend', 'impressions', 'Outbound_Clicks', 'Purchases', 
+        'ROAS_Purchase', 'Clicks_All', 'CTR_Raw'
+    ]
+    for col in metric_cols:
+        # Replace non-numeric with NaN, then convert to float
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # Drop rows where critical identifiers are missing
+    df.dropna(subset=['ad_name', 'ad_id', 'Spend'], inplace=True)
     
-    encodings_to_try = ['utf-8', 'cp1252', 'latin-1']
-    df = None
+    # Filter out Dynamic Ads (often appear as aggregated names) for core creative analysis
+    df = df[~df['ad_name'].str.contains('DPA|Dynamic|Set - Sales', na=False, case=False)]
     
-    for encoding in encodings_to_try:
-        try:
-            print(f"Attempting to load data with encoding: {encoding}")
-            df = pd.read_csv(file_path, encoding=encoding) 
-            print("Data loaded successfully!")
-            break
-        except FileNotFoundError:
-            print(f"ERROR: Data file not found at {file_path}. Please check the path and filename.")
-            return None
-        except UnicodeDecodeError:
-            continue 
-        except Exception as e:
-            print(f"An unexpected error occurred during file loading: {e}")
-            return None
+    return df
 
-    if df is None:
-        print("ERROR: Could not load the CSV file using any known encoding.")
-        return None
-
-    # --- Cleaning and Conversion ---
-    df.rename(columns=COLUMN_MAPPING, inplace=True)
+def calculate_derivatives(df):
+    """Calculates all necessary rates (CTR, CVR, ThruPlay)."""
     
-    # Check for required columns and ensure they exist (even as NaN)
-    required_cols = ['ad_name', 'Spend', 'impressions', 'frequency', 'clicks', 
-                     'CTR_Raw', 'Outbound_Clicks', 'Conversions', 'CPA', 
-                     'ROAS_Purchase', 'ThruPlay_Raw']
-                     
-    for col in required_cols:
-        if col not in df.columns:
-            print(f"WARNING: Column '{col}' is missing. Check your COLUMN_MAPPING.")
-            # Create the column with NaN if it's missing (will be dropped later if required for ranking)
-            df[col] = np.nan 
+    # 1. Conversion Rate (CVR) - Purchases / Outbound Clicks
+    df['CVR_Decimal'] = (df['Purchases'] / df['Outbound_Clicks']).replace([np.inf, -np.inf], 0).fillna(0)
 
-    # Clean and convert data types
-    numerical_cols = ['Spend', 'impressions', 'frequency', 'clicks', 'Conversions', 'CPA', 'ROAS_Purchase', 'Outbound_Clicks']
-    for col in numerical_cols:
-        if col in df.columns and df[col].dtype == 'object':
-            df[col] = df[col].astype(str).str.replace(r'[$,%]', '', regex=True)
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce') 
-
-    # Convert raw percentages to decimals
-    if 'CTR_Raw' in df.columns:
-        df['CTR_Decimal'] = pd.to_numeric(df['CTR_Raw'], errors='coerce') / 100.0
-    else:
-        df['CTR_Decimal'] = np.nan
+    # 2. Click-Through Rate (CTR) - Clean the raw percentage
+    # CTR_Raw is often reported as a percentage in the raw file, so we convert it to a decimal
+    df['CTR_Decimal'] = (df['CTR_Raw'] / 100).replace([np.inf, -np.inf], 0).fillna(0)
     
-    if 'ThruPlay_Raw' in df.columns:
-        df['ThruPlay_Decimal'] = pd.to_numeric(df['ThruPlay_Raw'], errors='coerce') / 100.0
-    else:
-        df['ThruPlay_Decimal'] = np.nan
+    # 3. Cost Per Acquisition (CPA)
+    df['CPA'] = (df['Spend'] / df['Purchases']).replace([np.inf, -np.inf], 0).fillna(0)
 
-    # Calculate CVR 
-    # Ensure Outbound_Clicks is not zero to avoid division by zero error
-    df['CVR_Decimal'] = np.where(df['Outbound_Clicks'] > 0, df['Conversions'] / df['Outbound_Clicks'], 0)
-    df['CVR_Decimal'].replace([np.inf, -np.inf], np.nan, inplace=True) 
-    df['CVR_Decimal'].fillna(0, inplace=True) 
+    # 4. ThruPlay (Proxy for Video View Rate)
+    # Assumes Video_95_Percent is not available in the sample, so we use a proxy 
+    # based on Impressions to avoid errors if that column is entirely missing/empty
+    df['ThruPlay_Decimal'] = (df['Video_95_Percent'] / df['impressions']).replace([np.inf, -np.inf], 0).fillna(0)
     
+    return df
+
+def apply_quality_filters(df):
+    """Applies standard performance filters to focus on relevant data."""
     
-    # --- DIAGNOSTIC AND FILTERING ---
-    initial_rows = len(df)
+    # Filter 1: Exclude low spend (to focus on tested creatives)
+    df = df[df['Spend'] >= 50]
     
-    # Apply Initial Filters (Min Spend/Impressions)
-    df_clean = df[
-        (df['Spend'] >= MIN_SPEND) & 
-        (df['impressions'] >= MIN_IMPRESSIONS) 
-    ].copy()
+    # Filter 2: Exclude low volume (to focus on statistically relevant results)
+    df = df[df['impressions'] >= 1000]
     
-    print(f"Initial rows loaded: {initial_rows}")
-    print(f"Rows dropped by minimum filters (Spend > {MIN_SPEND}, Imp > {MIN_IMPRESSIONS}): {initial_rows - len(df_clean)}")
+    # Filter 3: Exclude rows with zero spend or zero purchases (cleans up ratios)
+    df = df[df['Spend'] > 0]
+    df = df[df['Purchases'] > 0]
     
-    # Diagnostic check for critical missing data
-    print("\n--- Mandatory Data Check ---")
-    required_ranking_cols = ['Spend', 'CPA', 'ROAS_Purchase', 'CTR_Decimal', 'CVR_Decimal', 'ad_name']
-    for col in required_ranking_cols:
-        missing_count = df_clean[col].isna().sum()
-        if missing_count > 0:
-            print(f"CRITICAL: {missing_count} rows are missing data in the '{col}' column.")
-    print("---------------------------\n")
+    return df
 
-    # Final drop of rows that are missing essential data for ranking
-    df_clean.dropna(subset=required_ranking_cols, inplace=True)
+# ----------------------------------------------------------------------
+# 3. SCORING LOGIC
+# ----------------------------------------------------------------------
+
+def calculate_creative_score(df, weights):
+    """Calculates a composite score based on normalized metrics."""
     
-    print(f"Data successfully cleaned. {len(df_clean)} rows remaining for analysis.")
-    return df_clean
-
-# --- 3. RANKING LENS FUNCTIONS (For Terminal Output) ---
-
-def rank_acquisition_lens(data_frame):
-    # Calculates and ranks creatives based on CTR, CVR, and inverse CPA.
-    df_acq = data_frame[
-        (data_frame['Spend'] > MIN_SPEND_FOR_RANKING) & 
-        (data_frame['frequency'] < MAX_FREQUENCY) 
-    ].copy()
+    df_score = df.copy()
     
-    if df_acq.empty:
-        print("\n--- Running Acquisition Lens Ranking ---\nNo ads meet the Acquisition filter criteria.")
-        return pd.DataFrame()
-
-    # Normalize CPA (lower is better, so we invert the normalized score)
-    max_cpa = df_acq['CPA'].max()
-    df_acq['CPA_Normalized_Inverse'] = 1 - (df_acq['CPA'] / max_cpa) if max_cpa > 0 else 0
-
-    df_acq['Acquisition_Score'] = (
-        (df_acq['CTR_Decimal'] * 0.40) + 
-        (df_acq['CVR_Decimal'] * 0.40) + 
-        (df_acq['CPA_Normalized_Inverse'] * 0.20)
-    )
-
-    top_20 = df_acq.sort_values(by='Acquisition_Score', ascending=False).head(20)
-    print("\n--- Running Acquisition Lens Ranking ---")
-    print("Top 5 Acquisition Creatives:")
-    print(top_20[['ad_name', 'Acquisition_Score', 'CTR_Decimal', 'CPA']].head().to_string(index=False))
-    return top_20
-
-def rank_efficiency_lens(data_frame):
-    # Ranks creatives directly by ROAS after applying filters.
-    df_eff = data_frame[
-        (data_frame['Spend'] > MIN_SPEND_FOR_RANKING) & 
-        (data_frame['frequency'] < MAX_FREQUENCY) 
-    ].copy()
-
-    if df_eff.empty:
-        print("\n--- Running Efficiency Lens Ranking ---\nNo ads meet the Efficiency filter criteria.")
-        return pd.DataFrame()
-
-    top_20 = df_eff.sort_values(by='ROAS_Purchase', ascending=False).head(20)
-    print("\n--- Running Efficiency Lens Ranking ---")
-    print("Top 5 Efficiency Creatives (Ranked by ROAS):")
-    print(top_20[['ad_name', 'ROAS_Purchase', 'Spend', 'frequency']].head().to_string(index=False))
-    return top_20
-
-def rank_composite_score(data_frame):
-    # Calculates the composite creative score and finds Top/Bottom 20.
-    df_comp = data_frame[
-        (data_frame['Spend'] > MIN_SPEND_FOR_RANKING) & 
-        (data_frame['frequency'] < MAX_FREQUENCY) 
-    ].copy()
-
-    if df_comp.empty:
-        print("\n--- Running Composite Creative Score Ranking ---\nNo ads meet the Composite Score filter criteria.")
-        return pd.DataFrame(), pd.DataFrame(), data_frame
-
-    # Normalize metrics
-    # Handle cases where max_roas or max_thruplay might be zero
-    max_roas = df_comp['ROAS_Purchase'].max()
-    max_thruplay = df_comp['ThruPlay_Decimal'].max()
+    # Identify metrics that are 'higher is better'
+    metrics = list(weights.keys())
     
-    roas_norm = df_comp['ROAS_Purchase'] / max_roas if max_roas > 0 else 0
-    thruplay_norm = df_comp['ThruPlay_Decimal'] / max_thruplay if max_thruplay > 0 else 0
+    # Normalize each metric to a 0-1 scale
+    for metric in metrics:
+        col_name_norm = f'{metric}_norm'
+        
+        # Calculate normalization (Min-Max)
+        max_val = df_score[metric].max()
+        min_val = df_score[metric].min()
+        
+        if max_val == min_val:
+             # Handle case where all values are the same (prevents division by zero)
+            df_score[col_name_norm] = 0
+        else:
+            df_score[col_name_norm] = (df_score[metric] - min_val) / (max_val - min_val)
 
-    # Calculate Composite Score (Weighted Average)
-    df_comp['Creative_Score'] = (
-        (df_comp['CTR_Decimal'] * 0.4) + 
-        (df_comp['CVR_Decimal'] * 0.3) + 
-        (roas_norm * 0.2) + 
-        (thruplay_norm * 0.1)
-    )
+    # Apply weights to the normalized scores
+    df_score['Creative_Score'] = 0
+    for metric, weight in weights.items():
+        col_name_norm = f'{metric}_norm'
+        df_score['Creative_Score'] += df_score[col_name_norm] * weight
+        
+    # Scale the final score to 0-100
+    max_composite = df_score['Creative_Score'].max()
+    df_score['Creative_Score'] = (df_score['Creative_Score'] / max_composite) * 100
+    
+    return df_score.sort_values(by='Creative_Score', ascending=False)
 
-    top_20 = df_comp.sort_values(by='Creative_Score', ascending=False).head(20)
-    bottom_20 = df_comp.sort_values(by='Creative_Score', ascending=True).head(20)
+# ----------------------------------------------------------------------
+# 4. MAIN EXECUTION
+# ----------------------------------------------------------------------
 
-    print("\n--- Running Composite Creative Score Ranking ---")
-    print("Top 5 Composite Score Creatives:")
-    print(top_20[['ad_name', 'Creative_Score', 'CTR_Decimal', 'ROAS_Purchase']].head().to_string(index=False))
-    
-    # Merge the new score column back into the original dataframe using ad_name (our ID)
-    data_frame = data_frame.merge(df_comp[['ad_name', 'Creative_Score']], on='ad_name', how='left')
-    data_frame['Creative_Score'].fillna(0, inplace=True) 
-    
-    return top_20, bottom_20, data_frame
+if __name__ == '__main__':
+    try:
+        # 1. Load, Clean, and Filter Data
+        df_cleaned = load_and_clean_data('raw_creative_data.csv', COLUMN_MAPPING)
+        df_derived = calculate_derivatives(df_cleaned)
+        df_filtered = apply_quality_filters(df_derived)
 
-# --- 4. MAIN EXECUTION BLOCK (UPDATED FOR PLOTLY EXPORT) ---
-if __name__ == "__main__":
-    
-    df = load_data()
-    
-    if df is not None and not df.empty:
-        # Run all three lens analyses (only for side effects like ranking/scoring)
-        rank_acquisition_lens(df)
-        rank_efficiency_lens(df)
-        composite_top, composite_bottom, df_with_scores = rank_composite_score(df)
+        # 2. Calculate the Final Creative Score
+        df_scored = calculate_creative_score(df_filtered, SCORE_WEIGHTS)
+        
+        # 3. Final Preparation for Dashboard and AI
+        
+        # Separate Top and Bottom performers for the AI analysis (Top 20 / Bottom 20)
+        composite_top = df_scored.head(20)
+        composite_bottom = df_scored.tail(20)
+
+        # Ensure we have at least 35 unique ads total (Top 20 + Bottom 15)
+        # This prevents the Bottom list from overlapping too much with the Top
+        if len(composite_top) + len(composite_bottom) > len(df_scored):
+            # If the dataset is small, take the entire set
+            ai_data_to_export = df_scored.copy()
+        else:
+            # Combine the two lists and drop any duplicates that might have sneaked in
+            ai_data_to_export = pd.concat([composite_top, composite_bottom]).drop_duplicates(subset=['ad_name'])
+
 
         # --- 4a. EXPORT DATA FOR AI (ai_correlation_data.csv) ---
-        ai_data_to_export = pd.concat([composite_top, composite_bottom]).drop_duplicates(subset=['ad_name'])
         
+        # Columns needed for the next phase of AI analysis
         export_columns = [
-            'ad_name', 'Creative_Score', 'Spend', 'impressions', 'frequency', 
-            'CTR_Decimal', 'Outbound_Clicks', 'CPA', 'ROAS_Purchase', 'CVR_Decimal', 'ThruPlay_Decimal'
+            'ad_name', 'Creative_Score', 'Spend', 'impressions', 'frequency',
+            'CTR_Decimal', 'Outbound_Clicks', 'CPA', 'ROAS_Purchase', 'CVR_Decimal', 
+            'ThruPlay_Decimal', 'creative_link'  # <--- CRITICAL LINK FOR AI
         ]
         
-        final_export_cols = [col for col in export_columns if col in ai_data_to_export.columns]
-        ai_data_to_export[final_export_cols].to_csv('ai_correlation_data.csv', index=False)
+        ai_data_to_export[export_columns].to_csv('ai_correlation_data.csv', index=False)
+
+
+        # --- 4b. PREPARE DASHBOARD DATA & CHARTS ---
         
-        # --- 4b. PREPARE DATA FOR PLOTLY DASHBOARD ---
-        df_dash = df_with_scores.copy()
-        
-        # 1. Format Metrics for Humans (readability)
-        max_score = df_dash['Creative_Score'].max()
-        df_dash['Creative Score (0-100)'] = (df_dash['Creative_Score'] / max_score) * 100
+        df_dash = df_scored.copy()
+        # Format Metrics for Humans (readability)
+        df_dash['Creative Score (0-100)'] = df_dash['Creative_Score'].round(2)
         df_dash['CPA ($)'] = df_dash['CPA'].round(2)
         df_dash['ROAS'] = df_dash['ROAS_Purchase'].round(2)
         df_dash['CTR (%)'] = (df_dash['CTR_Decimal'] * 100).round(2)
         df_dash['CVR (%)'] = (df_dash['CVR_Decimal'] * 100).round(2)
-        
-        # 2. Clean Data for Charts
-        df_dash.dropna(subset=['CPA ($)', 'ROAS', 'CTR (%)', 'CVR (%)'], inplace=True)
-        df_dash = df_dash[(df_dash['CPA ($)'] > 0) & (df_dash['ROAS'] > 0)]
-        
-        # --- 4c. GENERATE PLOTLY CHARTS AND TABLES ---
 
-        # 1. Efficiency Chart (CPA vs. ROAS) - Scatter Plot
+        # 1. Efficiency Chart (CPA vs. ROAS)
         fig_efficiency = px.scatter(
             df_dash, 
             x='CPA ($)', 
@@ -265,8 +205,7 @@ if __name__ == "__main__":
         fig_efficiency.update_layout(xaxis_title="Cost Per Acquisition (AUD)", yaxis_title="Return On Ad Spend (ROAS)")
         efficiency_div = fig_efficiency.to_html(full_html=False, include_plotlyjs='cdn', div_id="efficiency_chart_div")
 
-
-        # 2. Acquisition Chart (CTR vs. CVR) - Scatter Plot
+        # 2. Acquisition Chart (CTR vs. CVR)
         fig_acquisition = px.scatter(
             df_dash, 
             x='CTR (%)', 
@@ -280,29 +219,26 @@ if __name__ == "__main__":
         fig_acquisition.update_layout(xaxis_title="Click-Through Rate (%)", yaxis_title="Conversion Rate (%)")
         acquisition_div = fig_acquisition.to_html(full_html=False, include_plotlyjs='cdn', div_id="acquisition_chart_div")
 
-
-        # 3. Top 10 Table (Digestible Ranking) - FIX: Added 'Spend' and comma
-        top_10 = df_dash.sort_values(by='Creative Score (0-100)', ascending=False).head(10)
-        top_10_cols = ['ad_name', 'Creative Score (0-100)', 'Spend', 'ROAS', 'CPA ($)', 'CTR (%)', 'CVR (%)']
-        top_10_table = top_10[top_10_cols].to_html(
+        # 3. Top 10 Table
+        top_10 = df_dash.head(10)
+        table_cols = ['ad_name', 'Creative Score (0-100)', 'Spend', 'ROAS', 'CPA ($)', 'CTR (%)', 'CVR (%)']
+        top_10_table = top_10[table_cols].to_html(
             index=False, 
             float_format=lambda x: f'{x:.2f}',
-            classes=['table table-striped table-hover']
-        )
-        
-        # 4. Bottom 10 Table (For Diagnostic and AI Contrast) - NEW: Added Bottom 10
-        bottom_10 = df_dash.sort_values(by='Creative Score (0-100)', ascending=True).head(10)
-        bottom_10_cols = ['ad_name', 'Creative Score (0-100)', 'Spend', 'ROAS', 'CPA ($)', 'CTR (%)', 'CVR (%)']
-        bottom_10_table = bottom_10[bottom_10_cols].to_html(
-            index=False, 
-            float_format=lambda x: f'{x:.2f}',
-            classes=['table table-striped table-hover table-danger'] # Using table-danger for contrast
+            classes=['table', 'table-striped', 'table-hover']
         )
 
-        # --- 4d. GENERATE SINGLE HTML DASHBOARD FILE ---
+        # 4. Bottom 10 Table
+        bottom_10 = df_dash.tail(10)
+        bottom_10_table = bottom_10[table_cols].to_html(
+            index=False, 
+            float_format=lambda x: f'{x:.2f}',
+            classes=['table', 'table-striped', 'table-hover table-danger']
+        )
+
+
+        # --- 4c. GENERATE SINGLE HTML DASHBOARD FILE ---
         
-        # This is the template for the website. The Python code fills in the parts
-        # The entire block is now wrapped in a multi-line string (f""") to prevent the NameError.
         html_template = f"""
 <!DOCTYPE html>
 <html>
@@ -315,7 +251,11 @@ if __name__ == "__main__":
     <style>
         .container-fluid {{ max-width: 1400px; }} 
         .plotly-graph-div {{ height: 500px !important; }}
-        /* FINAL CSS FIX: Center all numerical columns */
+        /* FINAL FIX: Force AD NAME header to align LEFT to match text */
+        table th:first-child {{ 
+            text-align: left !important; 
+        }}
+        /* EXISTING FIX: Keep all other columns CENTERED for numerical data */
         table th:nth-child(n+2), table td:nth-child(n+2) {{
             text-align: center !important; 
         }}
@@ -362,5 +302,11 @@ if __name__ == "__main__":
             f.write(html_template)
         
         print("\n--- SCRIPT COMPLETE ---")
-        print("Data saved to 'ai_correlation_data.csv'.")
+        print("Data saved to 'ai_correlation_data.csv' (includes creative links).")
         print("Interactive dashboard created: 'dashboard.html'.")
+
+    except FileNotFoundError:
+        print("\nERROR: raw_creative_data.csv not found.")
+        print("Please ensure the file is in the same directory and named correctly.")
+    except Exception as e:
+        print(f"\nAN UNEXPECTED ERROR OCCURRED: {e}")
