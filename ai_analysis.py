@@ -17,8 +17,8 @@ except ImportError:
 
 # Set your OpenAI API key as an environment variable:
 # export OPENAI_API_KEY='your-api-key-here'
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', None)
-USE_REAL_AI = OPENAI_AVAILABLE and OPENAI_API_KEY is not None
+# Do NOT store the API key in a module-level variable.
+# Instead, check for the API key in the environment only when needed.
 
 # AI Analysis prompt template
 AI_ANALYSIS_PROMPT = """Analyze this advertising creative and provide structured tags.
