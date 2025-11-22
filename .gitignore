@@ -41,5 +41,10 @@ wheels/
 # Project specific
 *.log
 
+# Generated outputs (these are created by running the scripts)
+dashboard.html
+final_ai_creative_report.csv
+ai_correlation_data.csv
+
 # Keep example data but ignore user data
 # (users should rename their files to raw_creative_data.csv)

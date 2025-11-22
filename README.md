@@ -63,16 +63,18 @@ This will:
 - Generate `dashboard.html` with interactive visualizations
 - Export `ai_correlation_data.csv` for AI analysis
 
-### Step 3: Run AI Analysis (Optional)
+### Step 3: Run AI Analysis
 
 ```bash
 python3 ai_analysis.py
 ```
 
 This will:
-- Analyze creative patterns (currently uses mock AI)
-- Generate actionable hypotheses
-- Create `final_ai_creative_report.csv`
+- Analyze creative patterns using **Real AI** (if OpenAI API key is set) or **Mock AI** (fallback)
+- Generate actionable hypotheses based on creative elements
+- Create `final_ai_creative_report.csv` with detailed tags
+
+**For Real AI Analysis:** See [PHASE1_GUIDE.md](PHASE1_GUIDE.md) for setup instructions.
 
 ### Step 4: View Results
 
@@ -98,13 +100,34 @@ The Creative Score is a weighted composite of:
 - **ROAS (20%)** - Return on ad spend
 - **Video Completion (10%)** - 95% video play-through rate
 
-## ⚠️ Current Limitations
+## ⚠️ AI Analysis Modes
 
-**Important:** The AI analysis currently uses **mock/simulated data** and does not perform real image/video analysis. To get actual AI-powered creative insights, you need to:
+The platform now supports **TWO MODES** for creative analysis:
 
-1. Sign up for OpenAI API (GPT-4V) or Google Gemini API
-2. Replace the `mock_vision_ai_analysis()` function in `ai_analysis.py` with actual API calls
-3. Add your API key to environment variables
+### 🤖 Real AI Mode (Phase 1 - NEW!)
+- Uses OpenAI GPT-4V for actual image/video analysis
+- Requires OpenAI API key (sign up at platform.openai.com)
+- Cost: ~$0.01-0.05 per creative analyzed
+- Provides accurate, AI-powered creative insights
+
+**Setup:**
+```bash
+pip install openai
+export OPENAI_API_KEY='your-api-key-here'
+python3 ai_analysis.py
+```
+
+See **[PHASE1_GUIDE.md](PHASE1_GUIDE.md)** for complete setup instructions.
+
+### 🎭 Mock AI Mode (Fallback)
+- Simulates AI analysis with randomized tags
+- No API key required - works out of the box
+- Free to use, instant results
+- Good for testing and development
+
+**The script automatically uses Real AI if configured, otherwise falls back to Mock AI.**
+
+---
 
 ## 🔍 For a Complete Analysis
 

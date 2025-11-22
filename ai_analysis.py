@@ -1,12 +1,113 @@
 import pandas as pd
 import random
 import time
+import os
+import json
 
-# --- MOCK VISION AI FUNCTION ---
-# NOTE: In a real-world scenario, this function would contain the API call
-# (e.g., using the 'openai' or 'google-genai' library) to GPT-4V or Gemini.
-# Since we cannot make live API calls here, this function simulates the AI's output
-# by randomly assigning descriptive tags based on the ad's performance score.
+# Try to import OpenAI - if not available, will fall back to mock
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
+# ----------------------------------------------------------------------
+# CONFIGURATION
+# ----------------------------------------------------------------------
+
+# Set your OpenAI API key as an environment variable:
+# export OPENAI_API_KEY='your-api-key-here'
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', None)
+USE_REAL_AI = OPENAI_AVAILABLE and OPENAI_API_KEY is not None
+
+# AI Analysis prompt template
+AI_ANALYSIS_PROMPT = """Analyze this advertising creative and provide structured tags.
+
+Focus on:
+1. FORMAT: What type of creative is this? (e.g., UGC-Style Video, Studio Shoot, Static Image, Carousel, Animated GFX)
+2. SETTING: Where does it take place? (e.g., Indoor Fashion Shot, Outdoor Lifestyle, Product Demo, Text Overlay Only)
+3. DOMINANT_COLOR: What are the primary colors? (e.g., Black/White, Vibrant Pink/Red, Muted Earth Tones, Cool Blue/Green)
+4. HOOK: How does it grab attention in the first 3 seconds? (e.g., Strong Text Hook, Fast-paced editing, Direct-to-camera speaking, Product close-up)
+5. EMOTION: What feeling does it evoke? (e.g., Excitement/Urgency, Calm/Luxurious, Informative, Aspirational)
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "format": "your answer here",
+  "setting": "your answer here", 
+  "dominant_color": "your answer here",
+  "hook": "your answer here",
+  "emotion": "your answer here"
+}"""
+
+# ----------------------------------------------------------------------
+# REAL AI VISION ANALYSIS (OpenAI GPT-4V)
+# ----------------------------------------------------------------------
+
+def real_vision_ai_analysis(ad_name, creative_link, score):
+    """Uses OpenAI GPT-4V to analyze a creative and extract structured tags."""
+    
+    if not USE_REAL_AI:
+        raise RuntimeError("OpenAI not available. Set OPENAI_API_KEY environment variable.")
+    
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+        
+        # Call GPT-4V with vision capabilities
+        response = client.chat.completions.create(
+            model="gpt-4-vision-preview",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": AI_ANALYSIS_PROMPT},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": creative_link,
+                                "detail": "low"  # Use "low" for cost efficiency, "high" for better quality
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=300,
+            temperature=0.3  # Lower temperature for more consistent tagging
+        )
+        
+        # Extract the JSON response
+        content = response.choices[0].message.content
+        
+        # Parse JSON from the response
+        # Handle cases where the AI might include markdown code blocks
+        if "```json" in content:
+            content = content.split("```json")[1].split("```")[0].strip()
+        elif "```" in content:
+            content = content.split("```")[1].split("```")[0].strip()
+        
+        tags = json.loads(content)
+        
+        # Validate that all required keys are present
+        required_keys = ['format', 'setting', 'dominant_color', 'hook', 'emotion']
+        for key in required_keys:
+            if key not in tags:
+                tags[key] = "Unknown"
+        
+        analysis_text = f"[REAL AI] Analyzed {ad_name} (Score: {score:.1f}). Format: {tags['format']}. Hook: {tags['hook']}. Emotion: {tags['emotion']}."
+        
+        return tags, analysis_text
+        
+    except json.JSONDecodeError as e:
+        print(f"Warning: Failed to parse AI response for {ad_name}: {e}")
+        # Fall back to mock analysis if parsing fails
+        return mock_vision_ai_analysis(ad_name, creative_link, score)
+    except Exception as e:
+        print(f"Warning: AI analysis failed for {ad_name}: {e}")
+        # Fall back to mock analysis if API call fails
+        return mock_vision_ai_analysis(ad_name, creative_link, score)
+
+# ----------------------------------------------------------------------
+# MOCK VISION AI FUNCTION (Fallback)
+# ----------------------------------------------------------------------
 
 def mock_vision_ai_analysis(ad_name, creative_link, score):
     """Simulates a Vision AI model analyzing a creative link and providing tags."""
@@ -33,12 +134,12 @@ def mock_vision_ai_analysis(ad_name, creative_link, score):
         tags['emotion'] = random.choice(['Informative', 'Pleasant'])
 
     # The AI's full analysis output
-    analysis_text = f"Analyzed {ad_name} (Score: {score:.1f}). Format: {tags['format']}. Hook: {tags['hook']}. Emotion: {tags['emotion']}. Link: {creative_link[:50]}..."
+    analysis_text = f"[MOCK] Analyzed {ad_name} (Score: {score:.1f}). Format: {tags['format']}. Hook: {tags['hook']}. Emotion: {tags['emotion']}."
     
     return tags, analysis_text
 
 # ----------------------------------------------------------------------
-# 3. MAIN EXECUTION
+# MAIN EXECUTION
 # ----------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -46,27 +147,58 @@ if __name__ == '__main__':
         # Load the data from the first pipeline step
         df = pd.read_csv('ai_correlation_data.csv')
         print(f"Loaded {len(df)} creatives for AI analysis.")
-
-        # --- A. RUN MOCK AI ANALYSIS ON ALL CREATIVES ---
+        
+        # Check AI mode
+        if USE_REAL_AI:
+            print("\n✅ REAL AI MODE: Using OpenAI GPT-4V for creative analysis")
+            print(f"   Model: gpt-4-vision-preview")
+            print(f"   Cost estimate: ~$0.01-0.05 per creative")
+            analysis_function = real_vision_ai_analysis
+        else:
+            print("\n⚠️  MOCK AI MODE: Using simulated analysis (set OPENAI_API_KEY to use real AI)")
+            if not OPENAI_AVAILABLE:
+                print("   Tip: Install OpenAI library with: pip install openai")
+            analysis_function = mock_vision_ai_analysis
+        
+        # --- A. RUN AI ANALYSIS ON ALL CREATIVES ---
         
         results = []
-        print("\n--- Running Mock Vision AI Analysis (This would take hours with a real API) ---")
+        print(f"\n--- Analyzing {len(df)} creatives ---")
         
         for index, row in df.iterrows():
-            # In a real API, the AI analyzes the URL from the 'creative_link' column
-            tags, analysis_text = mock_vision_ai_analysis(
-                row['ad_name'], 
-                row['creative_link'], 
-                row['Creative_Score']
-            )
-            
-            # Combine the AI's tags with the existing row data
-            row_data = row.to_dict()
-            row_data.update(tags)
-            results.append(row_data)
-            
-            # Print status update (Optional, shows progress)
-            # print(f"  [PROCESSED] {row['ad_name']} -> Format: {tags['format']}")
+            # Analyze the creative using the selected AI function
+            try:
+                tags, analysis_text = analysis_function(
+                    row['ad_name'], 
+                    row['creative_link'], 
+                    row['Creative_Score']
+                )
+                
+                # Combine the AI's tags with the existing row data
+                row_data = row.to_dict()
+                row_data.update(tags)
+                results.append(row_data)
+                
+                # Print progress
+                if (index + 1) % 5 == 0 or index == len(df) - 1:
+                    print(f"  Progress: {index + 1}/{len(df)} creatives analyzed")
+                
+                # Rate limiting for real AI to avoid hitting API limits
+                if USE_REAL_AI:
+                    time.sleep(0.5)  # Small delay between API calls
+                    
+            except Exception as e:
+                print(f"  Error analyzing {row['ad_name']}: {e}")
+                # On error, use basic fallback
+                row_data = row.to_dict()
+                row_data.update({
+                    'format': 'Unknown',
+                    'setting': 'Unknown',
+                    'dominant_color': 'Unknown',
+                    'hook': 'Unknown',
+                    'emotion': 'Unknown'
+                })
+                results.append(row_data)
         
         # Convert the results back to a DataFrame
         df_final = pd.DataFrame(results)
@@ -122,6 +254,9 @@ if __name__ == '__main__':
             
         print("\n" + "="*70)
         print("Analysis complete. Check 'final_ai_creative_report.csv' for raw data.")
+        
+        if USE_REAL_AI:
+            print("\n💡 Cost estimate for this analysis: $%.2f - $%.2f" % (len(df) * 0.01, len(df) * 0.05))
         
         # Export the final data set including the AI tags
         df_final.to_csv('final_ai_creative_report.csv', index=False)
