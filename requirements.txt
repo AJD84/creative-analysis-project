@@ -1,2 +1,14 @@
-pandas
-numpy
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization
+plotly>=5.14.0
+
+# AI Vision Analysis (Phase 1 - Real AI Integration)
+# Install with: pip install openai
+# Set your API key: export OPENAI_API_KEY='your-api-key-here'
+openai>=1.0.0
+
+# Alternative AI providers (optional):
+# google-generativeai>=0.3.0  (for Gemini integration)
